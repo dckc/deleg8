@@ -2,37 +2,31 @@
 
 /*jshint undef: true*/
 /*globals console, document, chrome */
+/*globals creds */ /* cf popup.html */
 
 console.log("@@script: popup.js");
-document.addEventListener('DOMContentLoaded', function() {
-  console.log("@@popup DOMContentLoaded");
 
-  var creds = {};
+(function() {
+  var onLoaded = function(h) {
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log("@@popup DOMContentLoaded");
 
-  var s = document.getElementById('status');
-  console.log('status elt:', s);
-  s.textContent = "S1";
-  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    s.textContent = "S2";
+      var ui = {
+	status: document.getElementById('status')
+      };
+      h(ui);
+    });
+  };
 
-    chrome.tabs.sendMessage(
-      tabs[0].id,
-      {greeting: "hello from popup.js@@"},
-      function(token) {
-	s.textContent = "S3";
+  var sendMessageToCurrentTab = function(msg, cb) {
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, msg, cb);
+    });
+  };
 
-	console.log('token: ', token);
-	creds._token = token;
-	console.log('creds: ', creds);
+  var withCookies = function(h) {
+    chrome.cookies.getAll({}, h);
+  };
 
-	chrome.cookies.getAll({}, function(cookies) {
-	  s.textContent = "S4";
-	  console.log(cookies);
-	  var session = cookies.filter(function(c) {
-	    return c.name == "_simple_session"; });
-	  creds._simple_session = session[0].value;
-	  s.textContent = 'creds: ' + JSON.stringify(creds);
-	});
-      });
-  });
-});
+  creds(onLoaded, sendMessageToCurrentTab, withCookies);
+})();
