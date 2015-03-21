@@ -1,34 +1,33 @@
+/* bg -- at the session page, install shareToken.js, show page action UI. */
+
 /*jshint undef: true */
-/*global chrome, console */
+/*global chrome */
 
+// These privileges are granted by manifest.json:
+// onOnstalled via background: { scripts: ... }
+// pageAction by page_action: { ... }
+// webNavigation, activeTab, and cross-origin access to simple.com
+// by permissions: [ ... ]
+//
+// "To insert code into a page, your extension must have cross-origin
+// permissions for the page."
+// https://developer.chrome.com/extensions/content_scripts#pi
+// https://developer.chrome.com/extensions/xhr#requesting-permission
+(function(onInstalled, pageAction, webNavigation, activeTab, simple) {
+  onInstalled.addListener(function() {
+    // console.log("installed" + new Date().toISOString());
 
-chrome.runtime.onInstalled.addListener(function() {
-  console.log("@@installed" + new Date().toISOString());
+    webNavigation.onCompleted.addListener(
+      function(details) {
+	// console.log('navigation completed ', details);
 
-  chrome.webNavigation.onCompleted.addListener(
-    function(details) {
-      console.log('llegamos la pagina simple.com/activity!@@', details);
-      chrome.tabs.executeScript(details.tabId, {
-	file: "cs1.js"
-      });
-      chrome.pageAction.show(details.tabId);
-    },
-    { url: [{urlEquals: "https://bank.simple.com/activity" }] });
-
-/*    
-  chrome.pageAction.onClicked.addListener(function(tab) {
-    chrome.tabs.executeScript( { file: 'cs1.js' } );
+	activeTab.executeScript(details.tabId, { file: "shareToken.js" });
+	pageAction.show(details.tabId);
+      },
+      { url: [{urlEquals: simple + 'activity' }] });
   });
-  console.log("@@pageAction.onClick listener added");
-*/
-
-/*@@
-  chrome.tabs.onActivated.addListener(function(activeInfo) {
-    console.log("@@tab activated", activeInfo);
-    chrome.pageAction.show(activeInfo.tabId);
-    console.log("@@pageAction shown");
-  });
-  console.log("@@tab query installed");
-*/
-});
-
+})(chrome.runtime.onInstalled,
+   chrome.pageAction,
+   chrome.webNavigation,
+   chrome.tabs,
+   "https://bank.simple.com/");

@@ -4,6 +4,7 @@
   "name": "Simple Session",
   "author": "Dan Connolly",
   "description": "Get simple.com session credentials.",
+  "homepage_url": "http://www.madmode.com/search/label/finances/",
   "version": "1.0",
   "background": {
     "scripts": ["bg.js"],
@@ -19,6 +20,6 @@
     "webNavigation",
     "activeTab",
     "cookies",
-    "https://*.simple.com/"
+    "https://bank.simple.com/"
   ]
 }
