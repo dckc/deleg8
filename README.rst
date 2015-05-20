@@ -47,3 +47,6 @@ __ https://developer.chrome.com/extensions/webNavigation
 __ https://developer.chrome.com/extensions/content_scripts#pi
 .. _activeTab: https://developer.chrome.com/extensions/activeTab
 
+I made some attempt to use `object capability style`__ by pushing use of ambient authority to the edges.
+
+__ http://www.erights.org/elib/capability/ode/ode-capabilities.html
